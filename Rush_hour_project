@@ -1,0 +1,80 @@
+import random
+import time
+
+# Initial money
+money = 100
+
+directions = ["North", "South", "East", "West"]
+
+def generate_traffic():
+    # Random vehicles in each direction (0–5)
+    return {d: random.randint(0, 5) for d in directions}
+
+def display_traffic(traffic):
+    print("\n🚦 Current Traffic स्थिति:")
+    for d, v in traffic.items():
+        print(f"{d}: {'🚗'*v} ({v})")
+
+def check_crash(choice, traffic):
+    # Opposite directions allowed together
+    if choice == "NS":
+        if traffic["East"] > 0 or traffic["West"] > 0:
+            return True
+    elif choice == "EW":
+        if traffic["North"] > 0 or traffic["South"] > 0:
+            return True
+    return False
+
+def play_round():
+    global money
+    
+    print("\n💰 Your Balance:", money)
+    bet = int(input("Enter your bet amount: "))
+    
+    if bet > money:
+        print("❌ Not enough balance!")
+        return
+    
+    traffic = generate_traffic()
+    display_traffic(traffic)
+
+    print("\nChoose signal:")
+    print("1. North-South Green")
+    print("2. East-West Green")
+    
+    choice = input("Enter choice (1/2): ")
+
+    if choice == "1":
+        signal = "NS"
+    elif choice == "2":
+        signal = "EW"
+    else:
+        print("❌ Invalid choice")
+        return
+
+    print("\n⏳ Processing traffic...")
+    time.sleep(2)
+
+    crash = check_crash(signal, traffic)
+
+    if crash:
+        print("💥 CRASH! You lost the bet.")
+        money -= bet
+    else:
+        print("✅ Smooth Traffic! You won.")
+        money += bet
+
+    print("💰 Updated Balance:", money)
+
+
+# Game loop
+print("🎮 CCTV Rush Hour Game Started!")
+
+while money > 0:
+    play_round()
+    
+    again = input("\nPlay again? (y/n): ").lower()
+    if again != 'y':
+        break
+
+print("\n🏁 Game Over! Final Balance:", money)
